@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Database Application</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<main class="wrap">
+  <header class="top">
+    <div><h1>Company Database</h1><p class="muted">Employees and departments with live SQL reports</p></div>
+    <button id="addBtn" class="btn primary">Add employee</button>
+  </header>
+  <nav id="tabs" class="tabs" role="tablist">
+    <button data-t="employees" class="on">Employees</button><button data-t="departments">Departments</button>
+    <button data-t="reports">Reports</button><button data-t="console">SQL console</button>
+  </nav>
+
+  <section id="employees" class="panel card">
+    <div class="tools">
+      <input id="q" type="search" placeholder="Search name, code or designation" aria-label="Search">
+      <select id="deptFilter" aria-label="Filter by department"><option value="">All departments</option></select>
+      <select id="sort" aria-label="Sort"><option value="name">Name</option><option value="salary">Salary</option><option value="hired">Newest hire</option><option value="dept">Department</option></select>
+    </div>
+    <div class="table-wrap"><table><thead id="empHead"></thead><tbody id="empBody"></tbody></table></div>
+    <p id="empEmpty" class="empty" hidden>No employees found.</p>
+  </section>
+
+  <section id="departments" class="panel card" hidden>
+    <div class="table-wrap"><table><thead id="depHead"></thead><tbody id="depBody"></tbody></table></div>
+  </section>
+
+  <section id="reports" class="panel" hidden>
+    <div class="stats" id="stats"></div>
+    <div class="two">
+      <div class="card"><h2>Payroll by department</h2><div id="deptBars"></div></div>
+      <div class="card"><h2>Recent hires</h2><ul id="recent" class="plain"></ul></div>
+    </div>
+  </section>
+
+  <section id="console" class="panel card" hidden>
+    <div class="console">
+      <aside><h2>Tables</h2><div id="schema"></div></aside>
+      <div>
+        <textarea id="sql" rows="5" spellcheck="false" aria-label="SQL query">SELECT d.name AS department, COUNT(e.id) AS headcount, ROUND(AVG(e.salary)) AS avg_salary
+FROM departments d LEFT JOIN employees e ON e.department_id = d.id
+GROUP BY d.id ORDER BY avg_salary DESC</textarea>
+        <div class="row"><small class="muted">Read-only. Single SELECT, max 200 rows. Ctrl+Enter to run.</small><button id="run" class="btn primary">Run query</button></div>
+        <p id="qErr" class="err" role="alert"></p>
+        <div class="table-wrap"><table id="result"></table></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<dialog id="dlg"><form id="form" novalidate>
+  <h2 id="dlgTitle"></h2><div id="fields" class="fields"></div>
+  <p id="formErr" class="err" role="alert"></p>
+  <div class="row"><button type="button" id="cancel" class="btn ghost">Cancel</button><button class="btn primary" type="submit">Save</button></div>
+</form></dialog>
+<div id="toast" class="toast" role="status"></div>
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
